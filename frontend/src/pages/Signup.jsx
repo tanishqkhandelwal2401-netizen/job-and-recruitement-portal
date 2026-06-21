@@ -1,5 +1,6 @@
+```jsx
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import API from "../api";
 
 function Signup() {
@@ -12,94 +13,141 @@ function Signup() {
     role: "candidate",
   });
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   const handleSignup = async (e) => {
     e.preventDefault();
 
     try {
       await API.post("/signup", form);
 
-      alert("Account Created Successfully 🎉");
+      alert("Account created successfully!");
       navigate("/");
     } catch (err) {
-      alert(err.response?.data?.detail || "Signup Failed");
+      alert(err.response?.data?.detail || "Signup failed");
     }
   };
 
   return (
-    <div className="signup-container">
-      <div className="signup-card">
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "#F8FAFC",
+      }}
+    >
+      <div
+        style={{
+          width: "450px",
+          padding: "40px",
+          background: "#FFFFFF",
+          borderRadius: "16px",
+          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+        }}
+      >
+        <h1
+          style={{
+            textAlign: "center",
+            color: "#0F172A",
+            marginBottom: "25px",
+          }}
+        >
+          Create Account
+        </h1>
 
-        <div className="logo-section">
-          <h1>Smart Recruitment Portal</h1>
-          <p>Create your account and start your journey</p>
-        </div>
+        <form
+          onSubmit={handleSignup}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "15px",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={form.name}
+            onChange={(e) =>
+              setForm({ ...form, name: e.target.value })
+            }
+            style={{
+              padding: "14px",
+              border: "1px solid #CBD5E1",
+              borderRadius: "8px",
+            }}
+          />
 
-        <form onSubmit={handleSignup}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) =>
+              setForm({ ...form, email: e.target.value })
+            }
+            style={{
+              padding: "14px",
+              border: "1px solid #CBD5E1",
+              borderRadius: "8px",
+            }}
+          />
 
-          <div className="input-group">
-            <label>Full Name</label>
-            <input
-              type="text"
-              name="name"
-              placeholder="Enter your name"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <input
+            type="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={(e) =>
+              setForm({ ...form, password: e.target.value })
+            }
+            style={{
+              padding: "14px",
+              border: "1px solid #CBD5E1",
+              borderRadius: "8px",
+            }}
+          />
 
-          <div className="input-group">
-            <label>Email Address</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <select
+            value={form.role}
+            onChange={(e) =>
+              setForm({ ...form, role: e.target.value })
+            }
+            style={{
+              padding: "14px",
+              border: "1px solid #CBD5E1",
+              borderRadius: "8px",
+            }}
+          >
+            <option value="candidate">Candidate</option>
+            <option value="recruiter">Recruiter</option>
+          </select>
 
-          <div className="input-group">
-            <label>Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Create password"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <label>Role</label>
-            <select
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-            >
-              <option value="candidate">Candidate</option>
-              <option value="recruiter">Recruiter</option>
-            </select>
-          </div>
-
-          <button className="signup-btn">
+          <button
+            type="submit"
+            style={{
+              padding: "14px",
+              background: "#2563EB",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: "600",
+              cursor: "pointer",
+            }}
+          >
             Create Account
           </button>
 
-          <p className="login-link">
-            Already have an account?
-            <Link to="/"> Login</Link>
+          <p style={{ textAlign: "center" }}>
+            Already have an account?{" "}
+            <a
+              href="/"
+              style={{
+                color: "#2563EB",
+                textDecoration: "none",
+                fontWeight: "600",
+              }}
+            >
+              Login
+            </a>
           </p>
-
         </form>
       </div>
     </div>
@@ -107,3 +155,4 @@ function Signup() {
 }
 
 export default Signup;
+```
