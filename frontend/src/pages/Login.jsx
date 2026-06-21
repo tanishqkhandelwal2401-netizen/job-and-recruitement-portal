@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
+import { FaArrowRight, FaBriefcase, FaUserTie } from "react-icons/fa";
 
 function Login() {
   const navigate = useNavigate();
@@ -10,13 +11,6 @@ function Login() {
     password: "",
   });
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -25,17 +19,13 @@ function Login() {
 
       localStorage.setItem("token", res.data.access_token);
       localStorage.setItem("role", res.data.role);
-      localStorage.setItem("name", res.data.name || "Candidate");
-      localStorage.setItem("email", res.data.email || form.email);
-
-      alert("Login successful");
+      localStorage.setItem("name", res.data.name);
+      localStorage.setItem("email", res.data.email);
 
       if (res.data.role === "candidate") {
         navigate("/candidate-dashboard");
-      } else if (res.data.role === "recruiter") {
-        navigate("/recruiter-dashboard");
       } else {
-        navigate("/");
+        navigate("/recruiter-dashboard");
       }
     } catch (err) {
       alert(err.response?.data?.detail || "Login failed");
@@ -43,105 +33,83 @@ function Login() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Welcome Back</h1>
-        <p style={styles.subtitle}>Login to your recruitment portal</p>
+    <div className="auth-page">
+      <div className="hero-panel">
+        <p className="eyebrow">SMART RECRUITMENT PORTAL</p>
+
+        <h1>
+          Hire faster.
+          <br />
+          Apply smarter.
+        </h1>
+
+        <p className="hero-text">
+          A modern placement platform for candidates, recruiters, resumes,
+          applications and ATS scoring.
+        </p>
+
+        <div className="hero-actions">
+          <button className="primary-btn">
+            Explore Jobs <FaArrowRight />
+          </button>
+
+          <button className="outline-btn">
+            For Recruiters <FaUserTie />
+          </button>
+        </div>
+
+        <div className="hero-stats">
+          <div>
+            <h3>500+</h3>
+            <p>Job Matches</p>
+          </div>
+          <div>
+            <h3>98%</h3>
+            <p>ATS Ready</p>
+          </div>
+          <div>
+            <h3>24/7</h3>
+            <p>Portal Access</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="login-card">
+        <div className="brand-icon">
+          <FaBriefcase />
+        </div>
+
+        <h2>Welcome Back</h2>
+        <p>Login to continue your career journey</p>
 
         <form onSubmit={handleLogin}>
           <input
-            style={styles.input}
             type="email"
-            name="email"
-            placeholder="Enter email"
+            placeholder="Email address"
             value={form.email}
-            onChange={handleChange}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
             required
           />
 
           <input
-            style={styles.input}
             type="password"
-            name="password"
-            placeholder="Enter password"
+            placeholder="Password"
             value={form.password}
-            onChange={handleChange}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
             required
           />
 
-          <button style={styles.button} type="submit">
-            Login
+          <button type="submit" className="login-btn">
+            Login <FaArrowRight />
           </button>
         </form>
 
-        <p style={styles.text}>
-          Don&apos;t have an account?{" "}
-          <Link to="/signup" style={styles.link}>
-            Signup
-          </Link>
+        <p className="switch-text">
+          New here? <Link to="/signup">Create account</Link>
         </p>
       </div>
     </div>
   );
 }
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg, #2563EB, #14B8A6)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    fontFamily: "Inter, Arial, sans-serif",
-  },
-  card: {
-    width: "400px",
-    background: "#FFFFFF",
-    padding: "35px",
-    borderRadius: "22px",
-    boxShadow: "0 20px 50px rgba(0,0,0,0.18)",
-  },
-  title: {
-    textAlign: "center",
-    marginBottom: "8px",
-    color: "#0F172A",
-  },
-  subtitle: {
-    textAlign: "center",
-    color: "#64748B",
-    marginBottom: "28px",
-  },
-  input: {
-    width: "100%",
-    padding: "14px",
-    marginBottom: "16px",
-    borderRadius: "12px",
-    border: "1px solid #CBD5E1",
-    fontSize: "15px",
-    outline: "none",
-    boxSizing: "border-box",
-  },
-  button: {
-    width: "100%",
-    padding: "14px",
-    border: "none",
-    borderRadius: "12px",
-    background: "#2563EB",
-    color: "#FFFFFF",
-    fontSize: "16px",
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
-  text: {
-    textAlign: "center",
-    marginTop: "20px",
-    color: "#64748B",
-  },
-  link: {
-    color: "#2563EB",
-    fontWeight: "bold",
-    textDecoration: "none",
-  },
-};
 
 export default Login;

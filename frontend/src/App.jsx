@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import CandidateDashboard from "./pages/CandidateDashboard";
@@ -25,5 +24,5 @@ function App() {
     </BrowserRouter>
   );
 }
-// vercel deployment trigger
+
 export default App;

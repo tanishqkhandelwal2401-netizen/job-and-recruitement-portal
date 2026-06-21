@@ -13,14 +13,18 @@ function Jobs() {
       const token = localStorage.getItem("token");
 
       const res = await API.get("/jobs", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      setJobs(res.data);
+      const data = res.data;
+
+      if (Array.isArray(data)) setJobs(data);
+      else if (Array.isArray(data.jobs)) setJobs(data.jobs);
+      else if (Array.isArray(data.data)) setJobs(data.data);
+      else setJobs([]);
     } catch (err) {
       alert("Failed to load jobs");
+      setJobs([]);
     }
   };
 
@@ -32,9 +36,7 @@ function Jobs() {
         `/apply/${jobId}`,
         {},
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -45,25 +47,37 @@ function Jobs() {
   };
 
   return (
-    <div style={styles.page}>
-      <h1 style={styles.heading}>Available Jobs</h1>
+    <div className="jobs-page">
+      <div className="jobs-hero">
+        <p className="eyebrow">CAREER OPPORTUNITIES</p>
+        <h1>Find your next role</h1>
+        <p>Apply to jobs that match your skills, resume and career goals.</p>
+      </div>
 
-      <div style={styles.jobsContainer}>
+      <div className="jobs-grid">
         {jobs.length === 0 ? (
-          <p style={styles.emptyText}>No jobs available</p>
+          <div className="empty-box">No jobs available</div>
         ) : (
           jobs.map((job) => (
-            <div key={job.id} style={styles.jobCard}>
-              <h2 style={styles.jobTitle}>{job.title}</h2>
-              <p style={styles.desc}>{job.description}</p>
+            <div key={job.id} className="premium-job-card">
+              <div>
+                <h2>{job.title}</h2>
+                <p className="company">{job.company}</p>
+              </div>
 
-              <p><b>Company:</b> {job.company}</p>
-              <p><b>Skills:</b> {job.skills}</p>
-              <p><b>Location:</b> {job.location}</p>
-              <p><b>Salary:</b> ₹{job.salary}</p>
+              <p className="job-desc">{job.description}</p>
 
-              <button onClick={() => applyJob(job.id)} style={styles.applyBtn}>
-                Apply Now
+              <div className="job-tags">
+                <span>{job.skills || "Skills not added"}</span>
+              </div>
+
+              <div className="job-meta">
+                <p>📍 {job.location}</p>
+                <p>💰 ₹{job.salary}</p>
+              </div>
+
+              <button onClick={() => applyJob(job.id)} className="login-btn">
+                Apply Now →
               </button>
             </div>
           ))
@@ -72,53 +86,5 @@ function Jobs() {
     </div>
   );
 }
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "#F8FAFC",
-    padding: "40px",
-    fontFamily: "Arial, sans-serif",
-  },
-  heading: {
-    textAlign: "center",
-    color: "#0F172A",
-    marginBottom: "30px",
-  },
-  jobsContainer: {
-    maxWidth: "950px",
-    margin: "auto",
-  },
-  jobCard: {
-    background: "#FFFFFF",
-    padding: "30px",
-    borderRadius: "18px",
-    marginBottom: "22px",
-    boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-    borderLeft: "6px solid #2563EB",
-  },
-  jobTitle: {
-    color: "#0F172A",
-  },
-  desc: {
-    color: "#64748B",
-    fontSize: "16px",
-  },
-  emptyText: {
-    textAlign: "center",
-    color: "#64748B",
-    fontSize: "18px",
-  },
-  applyBtn: {
-    marginTop: "15px",
-    padding: "12px 24px",
-    background: "#2563EB",
-    color: "#FFFFFF",
-    border: "none",
-    borderRadius: "10px",
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
-};
 
 export default Jobs;

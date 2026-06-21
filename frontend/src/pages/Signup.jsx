@@ -1,7 +1,7 @@
-
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
+import { FaUserPlus } from "react-icons/fa";
 
 function Signup() {
   const navigate = useNavigate();
@@ -27,42 +27,31 @@ function Signup() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        background: "#F8FAFC",
-      }}
-    >
-      <div
-        style={{
-          width: "450px",
-          padding: "40px",
-          background: "#FFFFFF",
-          borderRadius: "16px",
-          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-        }}
-      >
-        <h1
-          style={{
-            textAlign: "center",
-            color: "#0F172A",
-            marginBottom: "25px",
-          }}
-        >
-          Create Account
+    <div className="auth-page">
+      <div className="hero-panel">
+        <p className="eyebrow">CREATE ACCOUNT</p>
+
+        <h1>
+          Start Your
+          <br />
+          Career Journey
         </h1>
 
-        <form
-          onSubmit={handleSignup}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "15px",
-          }}
-        >
+        <p className="hero-text">
+          Join thousands of candidates and recruiters using HireFlow to
+          discover opportunities and hire top talent.
+        </p>
+      </div>
+
+      <div className="login-card">
+        <div className="brand-icon">
+          <FaUserPlus />
+        </div>
+
+        <h2>Create Account</h2>
+        <p>Register to access the recruitment portal</p>
+
+        <form onSubmit={handleSignup}>
           <input
             type="text"
             placeholder="Full Name"
@@ -70,25 +59,17 @@ function Signup() {
             onChange={(e) =>
               setForm({ ...form, name: e.target.value })
             }
-            style={{
-              padding: "14px",
-              border: "1px solid #CBD5E1",
-              borderRadius: "8px",
-            }}
+            required
           />
 
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email Address"
             value={form.email}
             onChange={(e) =>
               setForm({ ...form, email: e.target.value })
             }
-            style={{
-              padding: "14px",
-              border: "1px solid #CBD5E1",
-              borderRadius: "8px",
-            }}
+            required
           />
 
           <input
@@ -98,11 +79,7 @@ function Signup() {
             onChange={(e) =>
               setForm({ ...form, password: e.target.value })
             }
-            style={{
-              padding: "14px",
-              border: "1px solid #CBD5E1",
-              borderRadius: "8px",
-            }}
+            required
           />
 
           <select
@@ -111,48 +88,28 @@ function Signup() {
               setForm({ ...form, role: e.target.value })
             }
             style={{
-              padding: "14px",
-              border: "1px solid #CBD5E1",
-              borderRadius: "8px",
+              width: "100%",
+              padding: "16px",
+              borderRadius: "14px",
+              border: "1px solid #E2E8F0",
+              marginBottom: "15px",
             }}
           >
             <option value="candidate">Candidate</option>
             <option value="recruiter">Recruiter</option>
           </select>
 
-          <button
-            type="submit"
-            style={{
-              padding: "14px",
-              background: "#2563EB",
-              color: "#fff",
-              border: "none",
-              borderRadius: "8px",
-              fontWeight: "600",
-              cursor: "pointer",
-            }}
-          >
+          <button type="submit" className="login-btn">
             Create Account
           </button>
-
-          <p style={{ textAlign: "center" }}>
-            Already have an account?{" "}
-            <a
-              href="/"
-              style={{
-                color: "#2563EB",
-                textDecoration: "none",
-                fontWeight: "600",
-              }}
-            >
-              Login
-            </a>
-          </p>
         </form>
+
+        <p className="switch-text">
+          Already have an account? <Link to="/">Login</Link>
+        </p>
       </div>
     </div>
   );
 }
 
 export default Signup;
-

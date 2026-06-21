@@ -55,28 +55,27 @@ def signup(user: UserSignup):
 
 @app.post("/login")
 def login(user: UserLogin):
-    res = supabase.table("users").select("*").eq("email", user.email).execute()
+    existing = supabase.table("users").select("*").eq("email", user.email).execute()
 
-    if not res.data:
+    if not existing.data:
         raise HTTPException(status_code=404, detail="User not found")
 
-    db_user = res.data[0]
+    db_user = existing.data[0]
 
     if not verify_password(user.password, db_user["password"]):
-        raise HTTPException(status_code=401, detail="Wrong password")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = create_token({
         "id": db_user["id"],
-        "email": db_user["email"],
         "role": db_user["role"]
     })
 
     return {
         "access_token": token,
-        "token_type": "bearer",
-        "role": db_user["role"]
+        "role": db_user["role"],
+        "name": db_user["name"],
+        "email": db_user["email"]
     }
-
 
 @app.post("/jobs")
 def create_job(job: JobCreate, user=Depends(verify_token)):

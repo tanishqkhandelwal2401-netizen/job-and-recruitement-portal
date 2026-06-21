@@ -1,14 +1,27 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
+import {
+  FaHome,
+  FaBriefcase,
+  FaFileAlt,
+  FaChartLine,
+  FaBell,
+  FaBookmark,
+  FaUser,
+  FaSignOutAlt,
+  FaSearch,
+  FaMapMarkerAlt,
+  FaRupeeSign,
+} from "react-icons/fa";
 
 function CandidateDashboard() {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
 
+  const token = localStorage.getItem("token");
   const name = localStorage.getItem("name") || "Candidate";
   const email = localStorage.getItem("email") || "candidate@gmail.com";
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     fetchJobs();
@@ -27,9 +40,13 @@ function CandidateDashboard() {
 
   const applyJob = async (jobId) => {
     try {
-      await API.post(`/apply/${jobId}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await API.post(
+        `/apply/${jobId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       alert("Applied successfully");
     } catch (err) {
       alert(err.response?.data?.detail || "Apply failed");
@@ -44,23 +61,45 @@ function CandidateDashboard() {
   return (
     <div style={styles.page}>
       <aside style={styles.sidebar}>
-        <h2 style={styles.logo}>RecruitPro</h2>
+        <h2 style={styles.logo}>HireFlow</h2>
 
-        <button style={styles.navBtn}>🏠 Dashboard</button>
-        <button style={styles.navBtn} onClick={() => navigate("/jobs")}>💼 Jobs</button>
-        <button style={styles.navBtn} onClick={() => navigate("/resume-builder")}>📄 Resume Builder</button>
-        <button style={styles.navBtn} onClick={() => navigate("/ats-score")}>📊 ATS Score</button>
-        <button style={styles.logout} onClick={logout}>🚪 Logout</button>
+        <button style={styles.activeNav}>
+          <FaHome /> Dashboard
+        </button>
+
+        <button style={styles.navBtn} onClick={() => navigate("/jobs")}>
+          <FaBriefcase /> Browse Jobs
+        </button>
+
+        <button style={styles.navBtn} onClick={() => navigate("/resume-builder")}>
+          <FaFileAlt /> Resume Builder
+        </button>
+
+        <button style={styles.navBtn} onClick={() => navigate("/ats-score")}>
+          <FaChartLine /> ATS Checker
+        </button>
+
+        <button style={styles.navBtn}>
+          <FaBookmark /> Saved Jobs
+        </button>
+
+        <button style={styles.navBtn}>
+          <FaBell /> Notifications
+        </button>
+
+        <button style={styles.logout} onClick={logout}>
+          <FaSignOutAlt /> Logout
+        </button>
       </aside>
 
       <main style={styles.main}>
         <div style={styles.topbar}>
           <div>
-            <h1 style={styles.heading}>Candidate Dashboard</h1>
-            <p style={styles.subtext}>Welcome back, {name}</p>
+            <h1 style={styles.heading}>Welcome back, {name}</h1>
+            <p style={styles.subtext}>Track jobs, resumes and applications in one place.</p>
           </div>
 
-          <div style={styles.profile}>
+          <div style={styles.profileBox}>
             <div style={styles.avatar}>{name.charAt(0).toUpperCase()}</div>
             <div>
               <b>{name}</b>
@@ -69,36 +108,66 @@ function CandidateDashboard() {
           </div>
         </div>
 
-        <section style={styles.cards}>
-          <div style={styles.card}>
+        <div style={styles.searchBox}>
+          <FaSearch />
+          <input
+            style={styles.searchInput}
+            placeholder="Search jobs, companies, skills..."
+          />
+        </div>
+
+        <section style={styles.stats}>
+          <div style={styles.statCard}>
             <h3>💼 Total Jobs</h3>
             <h2>{jobs.length}</h2>
           </div>
-          <div style={styles.card}>
-            <h3>📄 Resume</h3>
-            <h2>Build Now</h2>
+
+          <div style={styles.statCard}>
+            <h3>📄 Resume Status</h3>
+            <h2>Ready</h2>
           </div>
-          <div style={styles.card}>
-            <h3>📊 ATS Score</h3>
-            <h2>Check</h2>
+
+          <div style={styles.statCard}>
+            <h3>📊 Profile Score</h3>
+            <h2>85%</h2>
+          </div>
+
+          <div style={styles.statCard}>
+            <h3>⭐ Saved Jobs</h3>
+            <h2>0</h2>
           </div>
         </section>
 
-        <h2 style={styles.sectionTitle}>Available Jobs</h2>
+        <h2 style={styles.sectionTitle}>Recommended Jobs</h2>
 
         <div style={styles.jobGrid}>
           {jobs.map((job) => (
             <div key={job.id} style={styles.jobCard}>
-              <h2>{job.title}</h2>
-              <p style={styles.desc}>{job.description}</p>
+              <div style={styles.jobTop}>
+                <div>
+                  <h2 style={styles.jobTitle}>{job.title}</h2>
+                  <p style={styles.company}>{job.company}</p>
+                </div>
+                <button style={styles.saveBtn}>♡</button>
+              </div>
 
-              <p><b>Company:</b> {job.company}</p>
-              <p><b>Location:</b> {job.location}</p>
-              <p><b>Salary:</b> ₹{job.salary}</p>
-              <p><b>Skills:</b> {job.skills}</p>
+              <p style={styles.description}>{job.description}</p>
+
+              <div style={styles.tags}>
+                <span style={styles.tag}>{job.skills}</span>
+              </div>
+
+              <div style={styles.jobInfo}>
+                <span>
+                  <FaMapMarkerAlt /> {job.location}
+                </span>
+                <span>
+                  <FaRupeeSign /> {job.salary}
+                </span>
+              </div>
 
               <button style={styles.applyBtn} onClick={() => applyJob(job.id)}>
-                Apply Now
+                Apply Now →
               </button>
             </div>
           ))}
@@ -112,128 +181,245 @@ const styles = {
   page: {
     minHeight: "100vh",
     display: "flex",
-    background: "#F8FAFC",
+    background: "#0F172A",
     fontFamily: "Inter, Arial, sans-serif",
-    color: "#0F172A",
+    color: "#F8FAFC",
   },
+
   sidebar: {
     width: "260px",
-    background: "#0F172A",
-    color: "white",
-    padding: "25px 18px",
-    position: "fixed",
     height: "100vh",
+    position: "fixed",
+    background: "linear-gradient(180deg, #111827, #1E1B4B)",
+    padding: "25px 18px",
+    boxSizing: "border-box",
   },
+
   logo: {
+    fontSize: "28px",
     marginBottom: "35px",
-    color: "#60A5FA",
+    background: "linear-gradient(135deg, #06B6D4, #8B5CF6)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
   },
+
   navBtn: {
     width: "100%",
-    padding: "14px",
+    padding: "14px 16px",
     marginBottom: "12px",
     border: "none",
-    borderRadius: "12px",
+    borderRadius: "14px",
     background: "transparent",
-    color: "white",
-    textAlign: "left",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
-  logout: {
-    width: "100%",
-    padding: "14px",
-    marginTop: "30px",
-    border: "none",
-    borderRadius: "12px",
-    background: "#EF4444",
-    color: "white",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
-  main: {
-    marginLeft: "260px",
-    padding: "30px",
-    width: "100%",
-  },
-  topbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    background: "white",
-    padding: "22px",
-    borderRadius: "20px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
-  },
-  heading: {
-    margin: 0,
-    fontSize: "32px",
-  },
-  subtext: {
-    color: "#64748B",
-    margin: "6px 0 0",
-  },
-  profile: {
+    color: "#CBD5E1",
+    fontSize: "15px",
     display: "flex",
     alignItems: "center",
     gap: "12px",
+    cursor: "pointer",
+    transition: "0.3s",
   },
+
+  activeNav: {
+    width: "100%",
+    padding: "14px 16px",
+    marginBottom: "12px",
+    border: "none",
+    borderRadius: "14px",
+    background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
+    color: "#fff",
+    fontSize: "15px",
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    cursor: "pointer",
+    boxShadow: "0 10px 25px rgba(99,102,241,.4)",
+  },
+
+  logout: {
+    width: "100%",
+    padding: "14px 16px",
+    marginTop: "35px",
+    border: "none",
+    borderRadius: "14px",
+    background: "#EF4444",
+    color: "#fff",
+    fontSize: "15px",
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    cursor: "pointer",
+  },
+
+  main: {
+    marginLeft: "260px",
+    width: "100%",
+    padding: "30px",
+  },
+
+  topbar: {
+    background: "rgba(30,41,59,.85)",
+    border: "1px solid rgba(255,255,255,.08)",
+    borderRadius: "24px",
+    padding: "24px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    boxShadow: "0 20px 50px rgba(0,0,0,.25)",
+  },
+
+  heading: {
+    margin: 0,
+    fontSize: "30px",
+  },
+
+  subtext: {
+    color: "#94A3B8",
+    marginTop: "8px",
+  },
+
+  profileBox: {
+    display: "flex",
+    alignItems: "center",
+    gap: "14px",
+    background: "#334155",
+    padding: "12px 18px",
+    borderRadius: "18px",
+  },
+
   avatar: {
     width: "48px",
     height: "48px",
     borderRadius: "50%",
-    background: "#2563EB",
-    color: "white",
+    background: "linear-gradient(135deg, #06B6D4, #8B5CF6)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     fontWeight: "bold",
     fontSize: "20px",
   },
+
   email: {
     margin: 0,
-    color: "#64748B",
-    fontSize: "14px",
+    color: "#94A3B8",
+    fontSize: "13px",
   },
-  cards: {
+
+  searchBox: {
+    marginTop: "25px",
+    background: "#1E293B",
+    borderRadius: "18px",
+    padding: "16px 20px",
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    border: "1px solid rgba(255,255,255,.08)",
+  },
+
+  searchInput: {
+    width: "100%",
+    background: "transparent",
+    border: "none",
+    outline: "none",
+    color: "#fff",
+    fontSize: "16px",
+  },
+
+  stats: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
+    gridTemplateColumns: "repeat(4, 1fr)",
     gap: "20px",
     marginTop: "25px",
   },
-  card: {
-    background: "white",
+
+  statCard: {
+    background: "linear-gradient(145deg, #1E293B, #334155)",
     padding: "24px",
-    borderRadius: "20px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
-    borderLeft: "5px solid #2563EB",
+    borderRadius: "22px",
+    border: "1px solid rgba(255,255,255,.08)",
+    boxShadow: "0 18px 40px rgba(0,0,0,.25)",
   },
+
   sectionTitle: {
     marginTop: "35px",
+    marginBottom: "20px",
   },
+
   jobGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(330px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
     gap: "22px",
   },
+
   jobCard: {
-    background: "white",
-    padding: "25px",
-    borderRadius: "20px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.07)",
+    background: "#1E293B",
+    padding: "24px",
+    borderRadius: "24px",
+    border: "1px solid rgba(255,255,255,.08)",
+    boxShadow: "0 18px 45px rgba(0,0,0,.28)",
   },
-  desc: {
-    color: "#64748B",
+
+  jobTop: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
-  applyBtn: {
-    marginTop: "15px",
-    padding: "12px 20px",
+
+  jobTitle: {
+    margin: 0,
+  },
+
+  company: {
+    color: "#06B6D4",
+    marginTop: "6px",
+  },
+
+  saveBtn: {
+    width: "42px",
+    height: "42px",
+    borderRadius: "50%",
     border: "none",
-    borderRadius: "12px",
-    background: "#2563EB",
-    color: "white",
-    fontWeight: "bold",
+    background: "#334155",
+    color: "#fff",
+    fontSize: "20px",
     cursor: "pointer",
+  },
+
+  description: {
+    color: "#CBD5E1",
+    lineHeight: "1.6",
+  },
+
+  tags: {
+    marginTop: "15px",
+  },
+
+  tag: {
+    background: "rgba(99,102,241,.18)",
+    color: "#A5B4FC",
+    padding: "8px 12px",
+    borderRadius: "999px",
+    fontSize: "13px",
+  },
+
+  jobInfo: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "20px",
+    color: "#94A3B8",
+  },
+
+  applyBtn: {
+    width: "100%",
+    marginTop: "22px",
+    padding: "14px",
+    border: "none",
+    borderRadius: "14px",
+    background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
+    color: "#fff",
+    fontWeight: "700",
+    cursor: "pointer",
+    fontSize: "15px",
+    boxShadow: "0 12px 25px rgba(99,102,241,.35)",
   },
 };
 
