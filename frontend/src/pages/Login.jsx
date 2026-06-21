@@ -120,6 +120,9 @@ function Login() {
       >
         Login
       </button>
+      <p className="auth-switch">
+       New user? <a href="/signup">Create account</a>
+     </p>
     </form>
   </div>
 </div>

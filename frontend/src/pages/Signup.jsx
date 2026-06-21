@@ -1,45 +1,108 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../api";
 
 function Signup() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     name: "",
     email: "",
-    password: ""
+    password: "",
+    role: "candidate",
   });
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await API.post("/signup", form);
-      alert("Signup successful");
-      console.log(res.data);
+      await API.post("/signup", form);
+
+      alert("Account Created Successfully 🎉");
+      navigate("/");
     } catch (err) {
-      alert(err.response?.data?.detail || "Signup failed");
+      alert(err.response?.data?.detail || "Signup Failed");
     }
   };
 
   return (
-    <form onSubmit={handleSignup}>
-      <input
-        placeholder="Name"
-        onChange={(e) => setForm({ ...form, name: e.target.value })}
-      />
+    <div className="signup-container">
+      <div className="signup-card">
 
-      <input
-        placeholder="Email"
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
-      />
+        <div className="logo-section">
+          <h1>Smart Recruitment Portal</h1>
+          <p>Create your account and start your journey</p>
+        </div>
 
-      <input
-        placeholder="Password"
-        type="password"
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-      />
+        <form onSubmit={handleSignup}>
 
-      <button>Signup</button>
-    </form>
+          <div className="input-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter your name"
+              value={form.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Email Address</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Create password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Role</label>
+            <select
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+            >
+              <option value="candidate">Candidate</option>
+              <option value="recruiter">Recruiter</option>
+            </select>
+          </div>
+
+          <button className="signup-btn">
+            Create Account
+          </button>
+
+          <p className="login-link">
+            Already have an account?
+            <Link to="/"> Login</Link>
+          </p>
+
+        </form>
+      </div>
+    </div>
   );
 }
 
