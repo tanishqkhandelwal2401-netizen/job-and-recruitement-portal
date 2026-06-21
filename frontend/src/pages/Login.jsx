@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
 
 function Login() {
@@ -10,6 +10,13 @@ function Login() {
     password: "",
   });
 
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -18,6 +25,8 @@ function Login() {
 
       localStorage.setItem("token", res.data.access_token);
       localStorage.setItem("role", res.data.role);
+      localStorage.setItem("name", res.data.name || "Candidate");
+      localStorage.setItem("email", res.data.email || form.email);
 
       alert("Login successful");
 
@@ -25,6 +34,8 @@ function Login() {
         navigate("/candidate-dashboard");
       } else if (res.data.role === "recruiter") {
         navigate("/recruiter-dashboard");
+      } else {
+        navigate("/");
       }
     } catch (err) {
       alert(err.response?.data?.detail || "Login failed");
@@ -32,111 +43,105 @@ function Login() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        background: "#F8FAFC",
-      }}
-    >
-      <div
-        style={{
-          width: "400px",
-          padding: "40px",
-          background: "#FFFFFF",
-          borderRadius: "16px",
-          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-        }}
-      >
-        <h1
-          style={{
-            textAlign: "center",
-            color: "#0F172A",
-            marginBottom: "30px",
-          }}
-        >
-          Login
-        </h1>
+    <div style={styles.page}>
+      <div style={styles.card}>
+        <h1 style={styles.title}>Welcome Back</h1>
+        <p style={styles.subtitle}>Login to your recruitment portal</p>
 
-        <form
-          onSubmit={handleLogin}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "16px",
-          }}
-        >
+        <form onSubmit={handleLogin}>
           <input
+            style={styles.input}
             type="email"
-            placeholder="Email"
+            name="email"
+            placeholder="Enter email"
             value={form.email}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                email: e.target.value,
-              })
-            }
-            style={{
-              padding: "14px",
-              border: "1px solid #CBD5E1",
-              borderRadius: "8px",
-              fontSize: "16px",
-            }}
+            onChange={handleChange}
+            required
           />
 
           <input
+            style={styles.input}
             type="password"
-            placeholder="Password"
+            name="password"
+            placeholder="Enter password"
             value={form.password}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                password: e.target.value,
-              })
-            }
-            style={{
-              padding: "14px",
-              border: "1px solid #CBD5E1",
-              borderRadius: "8px",
-              fontSize: "16px",
-            }}
+            onChange={handleChange}
+            required
           />
 
-          <button
-            type="submit"
-            style={{
-              padding: "14px",
-              background: "#2563EB",
-              color: "#FFFFFF",
-              border: "none",
-              borderRadius: "8px",
-              fontSize: "16px",
-              fontWeight: "600",
-              cursor: "pointer",
-            }}
-          >
+          <button style={styles.button} type="submit">
             Login
           </button>
-
-          <p style={{ textAlign: "center" }}>
-            New user?{" "}
-            <a
-              href="/signup"
-              style={{
-                color: "#2563EB",
-                textDecoration: "none",
-                fontWeight: "600",
-              }}
-            >
-              Create Account
-            </a>
-          </p>
         </form>
+
+        <p style={styles.text}>
+          Don&apos;t have an account?{" "}
+          <Link to="/signup" style={styles.link}>
+            Signup
+          </Link>
+        </p>
       </div>
     </div>
   );
 }
+
+const styles = {
+  page: {
+    minHeight: "100vh",
+    background: "linear-gradient(135deg, #2563EB, #14B8A6)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontFamily: "Inter, Arial, sans-serif",
+  },
+  card: {
+    width: "400px",
+    background: "#FFFFFF",
+    padding: "35px",
+    borderRadius: "22px",
+    boxShadow: "0 20px 50px rgba(0,0,0,0.18)",
+  },
+  title: {
+    textAlign: "center",
+    marginBottom: "8px",
+    color: "#0F172A",
+  },
+  subtitle: {
+    textAlign: "center",
+    color: "#64748B",
+    marginBottom: "28px",
+  },
+  input: {
+    width: "100%",
+    padding: "14px",
+    marginBottom: "16px",
+    borderRadius: "12px",
+    border: "1px solid #CBD5E1",
+    fontSize: "15px",
+    outline: "none",
+    boxSizing: "border-box",
+  },
+  button: {
+    width: "100%",
+    padding: "14px",
+    border: "none",
+    borderRadius: "12px",
+    background: "#2563EB",
+    color: "#FFFFFF",
+    fontSize: "16px",
+    fontWeight: "bold",
+    cursor: "pointer",
+  },
+  text: {
+    textAlign: "center",
+    marginTop: "20px",
+    color: "#64748B",
+  },
+  link: {
+    color: "#2563EB",
+    fontWeight: "bold",
+    textDecoration: "none",
+  },
+};
 
 export default Login;
