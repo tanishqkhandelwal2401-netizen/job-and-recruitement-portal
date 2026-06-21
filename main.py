@@ -49,7 +49,9 @@ def signup(user: UserSignup):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
+@app.post("/signup")
+def signup(user: UserSignup):
+    print("Password received:", user.password)
 
 @app.post("/login")
 def login(user: UserLogin):

@@ -8,26 +8,23 @@ function Login() {
   });
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await API.post("/login", form);
+  try {
+    const res = await API.post("/login", form);
 
-      localStorage.setItem(
-        "token",
-        res.data.access_token
-      );
+    localStorage.setItem("token", res.data.access_token);
 
-      alert("Login successful");
-
-      window.location.href = "/candidate-dashboard";
-    } catch (err) {
-      alert(
-        err.response?.data?.detail ||
-        "Login failed"
-      );
-    }
-  };
+    alert("Login successful");
+  } catch (err) {
+    console.log(err.response?.data);
+    alert(
+      err.response?.data?.detail ||
+      err.message ||
+      "Login failed"
+    );
+  }
+};
 
   return (
     <div
