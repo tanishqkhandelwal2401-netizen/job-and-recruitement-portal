@@ -608,3 +608,51 @@ body {
   padding-left: 20px;
   color: #cbd5e1;
 }
+.recruiter-layout {
+  min-height: 100vh;
+  display: flex;
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  position: fixed;
+  padding: 28px 18px;
+  background: linear-gradient(180deg, #020617, #1e1b4b);
+}
+
+.dashboard-main {
+  margin-left: 260px;
+  width: 100%;
+  padding: 30px;
+}
+
+.welcome-card,
+.panel-card,
+.stat-card {
+  background: #1e293b;
+  border-radius: 24px;
+  padding: 26px;
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.job-card {
+  background: #0f172a;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
