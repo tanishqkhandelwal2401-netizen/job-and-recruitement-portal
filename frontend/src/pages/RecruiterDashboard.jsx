@@ -1,22 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
-import {
-  FaBriefcase,
-  FaPlus,
-  FaUsers,
-  FaChartLine,
-  FaSignOutAlt,
-  FaHome,
-} from "react-icons/fa";
 
 function RecruiterDashboard() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  const name = localStorage.getItem("name") || "Recruiter";
 
-  const [jobs, setJobs] = useState([]);
-  const [form, setForm] = useState({
+  const [job, setJob] = useState({
     title: "",
     company: "",
     location: "",
@@ -25,53 +14,8 @@ function RecruiterDashboard() {
     description: "",
   });
 
-  useEffect(() => {
-    fetchJobs();
-  }, []);
-
-  const fetchJobs = async () => {
-  try {
-    const res = await API.get("/jobs", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const data = res.data;
-
-    if (Array.isArray(data)) {
-      setJobs(data);
-    } else if (Array.isArray(data.jobs)) {
-      setJobs(data.jobs);
-    } else if (Array.isArray(data.data)) {
-      setJobs(data.data);
-    } else {
-      setJobs([]);
-    }
-  } catch (err) {
-    console.log(err);
-    setJobs([]);
-  }
-};
-  const createJob = async (e) => {
-    e.preventDefault();
-
-    try {
-      await API.post("/jobs", form, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      alert("Job posted successfully");
-      setForm({
-        title: "",
-        company: "",
-        location: "",
-        salary: "",
-        skills: "",
-        description: "",
-      });
-      fetchJobs();
-    } catch (err) {
-      alert(err.response?.data?.detail || "Job post failed");
-    }
+  const scrollToSection = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   const logout = () => {
@@ -79,108 +23,188 @@ function RecruiterDashboard() {
     navigate("/");
   };
 
+  const postJob = async (e) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem("token");
+
+      await API.post("/jobs", job, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("Job posted successfully");
+
+      setJob({
+        title: "",
+        company: "",
+        location: "",
+        salary: "",
+        skills: "",
+        description: "",
+      });
+    } catch (err) {
+      alert(err.response?.data?.detail || "Failed to post job");
+    }
+  };
+
   return (
-    <div className="dash-page">
-      <aside className="dash-sidebar">
-        <h2 className="dash-logo">HireFlow</h2>
+    <div className="recruiter-layout">
+      <aside className="sidebar">
+        <h1>HireFlow</h1>
 
-        <button className="dash-nav active">
-          <FaHome /> Dashboard
+        <button onClick={() => scrollToSection("dashboard")}>
+          🏠 Dashboard
         </button>
 
-        <button className="dash-nav">
-          <FaBriefcase /> Posted Jobs
+        <button onClick={() => scrollToSection("posted-jobs")}>
+          💼 Posted Jobs
         </button>
 
-        <button className="dash-nav">
-          <FaUsers /> Candidates
+        <button onClick={() => scrollToSection("candidates")}>
+          👥 Candidates
         </button>
 
-        <button className="dash-nav">
-          <FaChartLine /> Analytics
+        <button onClick={() => scrollToSection("analytics")}>
+          📊 Analytics
         </button>
 
-        <button className="dash-logout" onClick={logout}>
-          <FaSignOutAlt /> Logout
+        <button className="logout-btn" onClick={logout}>
+          🚪 Logout
         </button>
       </aside>
 
-      <main className="dash-main">
-        <div className="dash-topbar">
+      <main className="dashboard-main">
+        <section id="dashboard" className="welcome-card">
           <div>
-            <h1>Welcome, {name}</h1>
+            <h2>Welcome, Recruiter</h2>
             <p>Post jobs, manage openings and track hiring activity.</p>
           </div>
 
-          <button className="gradient-btn">
-            <FaPlus /> New Job
+          <button onClick={() => scrollToSection("new-job")}>
+            + New Job
           </button>
-        </div>
+        </section>
 
-        <section className="dash-stats">
-          <div className="dash-card">
-            <h3>Total Jobs</h3>
-            <h2>{jobs.length}</h2>
+        <section id="analytics" className="stats-grid">
+          <div className="stat-card">
+            <p>Total Jobs</p>
+            <h2>15</h2>
           </div>
 
-          <div className="dash-card">
-            <h3>Applications</h3>
+          <div className="stat-card">
+            <p>Applications</p>
             <h2>24</h2>
           </div>
 
-          <div className="dash-card">
-            <h3>Shortlisted</h3>
+          <div className="stat-card">
+            <p>Shortlisted</p>
             <h2>8</h2>
           </div>
 
-          <div className="dash-card">
-            <h3>Interviews</h3>
+          <div className="stat-card">
+            <p>Interviews</p>
             <h2>3</h2>
           </div>
         </section>
 
-        <div className="recruiter-grid">
-          <form className="job-form" onSubmit={createJob}>
+        <div className="dashboard-grid">
+          <section id="new-job" className="panel-card">
             <h2>Post a New Job</h2>
 
-            {["title", "company", "location", "salary", "skills"].map((field) => (
+            <form onSubmit={postJob}>
               <input
-                key={field}
-                placeholder={field.toUpperCase()}
-                value={form[field]}
+                placeholder="TITLE"
+                value={job.title}
                 onChange={(e) =>
-                  setForm({ ...form, [field]: e.target.value })
+                  setJob({ ...job, title: e.target.value })
                 }
-                required
               />
-            ))}
 
-            <textarea
-              placeholder="JOB DESCRIPTION"
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-              required
-            />
+              <input
+                placeholder="COMPANY"
+                value={job.company}
+                onChange={(e) =>
+                  setJob({ ...job, company: e.target.value })
+                }
+              />
 
-            <button className="login-btn" type="submit">
-              Post Job
-            </button>
-          </form>
+              <input
+                placeholder="LOCATION"
+                value={job.location}
+                onChange={(e) =>
+                  setJob({ ...job, location: e.target.value })
+                }
+              />
 
-          <div className="posted-jobs">
+              <input
+                placeholder="SALARY"
+                value={job.salary}
+                onChange={(e) =>
+                  setJob({ ...job, salary: e.target.value })
+                }
+              />
+
+              <input
+                placeholder="SKILLS"
+                value={job.skills}
+                onChange={(e) =>
+                  setJob({ ...job, skills: e.target.value })
+                }
+              />
+
+              <textarea
+                placeholder="JOB DESCRIPTION"
+                value={job.description}
+                onChange={(e) =>
+                  setJob({ ...job, description: e.target.value })
+                }
+              />
+
+              <button type="submit">Post Job</button>
+            </form>
+          </section>
+
+          <section id="posted-jobs" className="panel-card">
             <h2>Posted Jobs</h2>
 
-            {jobs.map((job) => (
-              <div className="mini-job-card" key={job.id}>
-                <h3>{job.title}</h3>
-                <p>{job.company}</p>
-                <span>{job.location}</span>
-              </div>
-            ))}
-          </div>
+            <div className="job-card">
+              <h3>Python Developer Intern</h3>
+              <p>Tech Solutions</p>
+              <span>Mumbai</span>
+            </div>
+
+            <div className="job-card">
+              <h3>Frontend Developer</h3>
+              <p>Infosys</p>
+              <span>Pune</span>
+            </div>
+
+            <div className="job-card">
+              <h3>Data Analyst</h3>
+              <p>TCS</p>
+              <span>Mumbai</span>
+            </div>
+          </section>
         </div>
+
+        <section id="candidates" className="panel-card">
+          <h2>Candidates</h2>
+
+          <div className="job-card">
+            <h3>Aarav Sharma</h3>
+            <p>Skills: Python, FastAPI, React</p>
+            <span>Status: Applied</span>
+          </div>
+
+          <div className="job-card">
+            <h3>Kalyani Jaiswal</h3>
+            <p>Skills: Graphic Design, React, Python</p>
+            <span>Status: Shortlisted</span>
+          </div>
+        </section>
       </main>
     </div>
   );
