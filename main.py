@@ -16,8 +16,6 @@ app.add_middleware(
 )
 
 
-
-
 @app.get("/")
 def home():
     return {"message": "Smart Recruitment & Placement Portal Backend"}
@@ -25,33 +23,27 @@ def home():
 
 @app.post("/signup")
 def signup(user: UserSignup):
-    try:
-        existing = supabase.table("users").select("*").eq("email", user.email).execute()
+    existing = supabase.table("users").select("*").eq("email", user.email).execute()
 
-        if existing.data:
-            raise HTTPException(status_code=400, detail="Email already registered")
+    if existing.data:
+        raise HTTPException(status_code=400, detail="Email already registered")
 
-        hashed = hash_password(user.password)
+    hashed = hash_password(user.password)
 
-        data = {
-            "name": user.name,
-            "email": user.email,
-            "password": hashed,
-            "role": user.role
-        }
+    data = {
+        "name": user.name,
+        "email": user.email,
+        "password": hashed,
+        "role": user.role
+    }
 
-        res = supabase.table("users").insert(data).execute()
+    res = supabase.table("users").insert(data).execute()
 
-        return {
-            "message": "User registered successfully",
-            "user": res.data
-        }
+    return {
+        "message": "User registered successfully",
+        "user": res.data
+    }
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-@app.post("/signup")
-def signup(user: UserSignup):
-    print("Password received:", user.password)
 
 @app.post("/login")
 def login(user: UserLogin):
@@ -76,6 +68,72 @@ def login(user: UserLogin):
         "name": db_user["name"],
         "email": db_user["email"]
     }
+
+
+@app.post("/candidate-profile")
+def create_candidate_profile(profile: dict, user=Depends(verify_token)):
+    if user["role"] != "candidate":
+        raise HTTPException(status_code=403, detail="Only candidate can create profile")
+
+    data = {
+        "candidate_id": user["id"],
+        "full_name": profile.get("full_name"),
+        "phone": profile.get("phone"),
+        "education": profile.get("education"),
+        "skills": profile.get("skills"),
+        "experience": profile.get("experience"),
+        "resume_link": profile.get("resume_link"),
+        "portfolio_link": profile.get("portfolio_link")
+    }
+
+    res = supabase.table("candidate_profiles").insert(data).execute()
+
+    return {
+        "message": "Candidate profile created successfully",
+        "profile": res.data
+    }
+
+
+@app.get("/candidate-profile")
+def get_candidate_profile(user=Depends(verify_token)):
+    if user["role"] != "candidate":
+        raise HTTPException(status_code=403, detail="Only candidate can view profile")
+
+    res = supabase.table("candidate_profiles").select("*").eq("candidate_id", user["id"]).execute()
+    return res.data
+
+
+@app.post("/recruiter-profile")
+def create_recruiter_profile(profile: dict, user=Depends(verify_token)):
+    if user["role"] != "recruiter":
+        raise HTTPException(status_code=403, detail="Only recruiter can create profile")
+
+    data = {
+        "recruiter_id": user["id"],
+        "recruiter_name": profile.get("recruiter_name"),
+        "company_name": profile.get("company_name"),
+        "company_website": profile.get("company_website"),
+        "company_location": profile.get("company_location"),
+        "phone": profile.get("phone"),
+        "about_company": profile.get("about_company")
+    }
+
+    res = supabase.table("recruiter_profiles").insert(data).execute()
+
+    return {
+        "message": "Recruiter profile created successfully",
+        "profile": res.data
+    }
+
+
+@app.get("/recruiter-profile")
+def get_recruiter_profile(user=Depends(verify_token)):
+    if user["role"] != "recruiter":
+        raise HTTPException(status_code=403, detail="Only recruiter can view profile")
+
+    res = supabase.table("recruiter_profiles").select("*").eq("recruiter_id", user["id"]).execute()
+    return res.data
+
 
 @app.post("/jobs")
 def create_job(job: JobCreate, user=Depends(verify_token)):
@@ -166,6 +224,8 @@ def analytics(user=Depends(verify_token)):
         "total_applications": len(applications.data),
         "total_users": len(users.data)
     }
+
+
 @app.post("/ats-score/{job_id}")
 def ats_score(job_id: str, data: ATSRequest, user=Depends(verify_token)):
     job = supabase.table("jobs").select("*").eq("id", job_id).execute()

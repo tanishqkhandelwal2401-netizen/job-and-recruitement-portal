@@ -1,7 +1,7 @@
+
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import API from "../api";
-import { FaArrowRight, FaBriefcase, FaUserTie } from "react-icons/fa";
 
 function Login() {
   const navigate = useNavigate();
@@ -19,12 +19,12 @@ function Login() {
 
       localStorage.setItem("token", res.data.access_token);
       localStorage.setItem("role", res.data.role);
-      localStorage.setItem("name", res.data.name);
-      localStorage.setItem("email", res.data.email);
+
+      alert("Login Successful");
 
       if (res.data.role === "candidate") {
         navigate("/candidate-dashboard");
-      } else {
+      } else if (res.data.role === "recruiter") {
         navigate("/recruiter-dashboard");
       }
     } catch (err) {
@@ -32,10 +32,14 @@ function Login() {
     }
   };
 
+  const handleRecruiterClick = () => {
+    navigate("/signup");
+  };
+
   return (
-    <div className="auth-page">
-      <div className="hero-panel">
-        <p className="eyebrow">SMART RECRUITMENT PORTAL</p>
+    <div className="login-page">
+      <div className="hero-section">
+        <p className="tagline">SMART RECRUITMENT PORTAL</p>
 
         <h1>
           Hire faster.
@@ -43,69 +47,64 @@ function Login() {
           Apply smarter.
         </h1>
 
-        <p className="hero-text">
-          A modern placement platform for candidates, recruiters, resumes,
-          applications and ATS scoring.
+        <p>
+          A modern placement platform for candidates, recruiters,
+          resumes, applications and ATS scoring.
         </p>
 
-        <div className="hero-actions">
+        <div className="hero-buttons">
           <button className="primary-btn">
-            Explore Jobs <FaArrowRight />
+            Explore Jobs →
           </button>
 
-          <button className="outline-btn">
-            For Recruiters <FaUserTie />
+          <button
+            className="secondary-btn"
+            onClick={handleRecruiterClick}
+          >
+            For Recruiters 👔
           </button>
-        </div>
-
-        <div className="hero-stats">
-          <div>
-            <h3>500+</h3>
-            <p>Job Matches</p>
-          </div>
-          <div>
-            <h3>98%</h3>
-            <p>ATS Ready</p>
-          </div>
-          <div>
-            <h3>24/7</h3>
-            <p>Portal Access</p>
-          </div>
         </div>
       </div>
 
       <div className="login-card">
-        <div className="brand-icon">
-          <FaBriefcase />
-        </div>
-
         <h2>Welcome Back</h2>
-        <p>Login to continue your career journey</p>
 
         <form onSubmit={handleLogin}>
           <input
             type="email"
-            placeholder="Email address"
+            placeholder="Email"
             value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            required
+            onChange={(e) =>
+              setForm({ ...form, email: e.target.value })
+            }
           />
 
           <input
             type="password"
             placeholder="Password"
             value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            required
+            onChange={(e) =>
+              setForm({ ...form, password: e.target.value })
+            }
           />
 
-          <button type="submit" className="login-btn">
-            Login <FaArrowRight />
+          <button type="submit">
+            Login →
           </button>
         </form>
 
-        <p className="switch-text">
-          New here? <Link to="/signup">Create account</Link>
+        <p>
+          New here?{" "}
+          <span
+            style={{
+              cursor: "pointer",
+              color: "#6366f1",
+              fontWeight: "600",
+            }}
+            onClick={() => navigate("/signup")}
+          >
+            Create account
+          </span>
         </p>
       </div>
     </div>
@@ -113,3 +112,4 @@ function Login() {
 }
 
 export default Login;
+
