@@ -61,7 +61,7 @@ function CandidateDashboard() {
   return (
     <div style={styles.page}>
       <aside style={styles.sidebar}>
-        <h2 style={styles.logo}>HireFlow</h2>
+        <h1 className="dash-logo">TalentBridge</h1>
 
         <button style={styles.activeNav}>
           <FaHome /> Dashboard

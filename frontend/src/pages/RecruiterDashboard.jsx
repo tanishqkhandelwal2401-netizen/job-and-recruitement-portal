@@ -51,7 +51,7 @@ function RecruiterDashboard() {
   return (
     <div className="dash-page">
       <aside className="dash-sidebar">
-        <h1 className="dash-logo">HireFlow</h1>
+        <h1 className="dash-logo">TalentBridge</h1>
 
         <button className="dash-nav active" onClick={() => scrollToSection("dashboard")}>
           🏠 Dashboard
